@@ -1,0 +1,27 @@
+{
+  "target": "http://127.0.0.1:62308",
+  "concurrency": 10,
+  "total_requests": 300,
+  "duration_s": 7.47,
+  "rps": 40.16,
+  "error_rate": 0.0033,
+  "status_codes": {
+    "200": 299,
+    "503": 1
+  },
+  "latency_ms": {
+    "min": 124.3,
+    "avg": 246.3,
+    "p50": 190.3,
+    "p90": 219.6,
+    "p95": 235.5,
+    "p99": 1691.2,
+    "max": 1726.6
+  },
+  "total_cost_usd": 0.010047,
+  "slo": {
+    "p95_ms": 500.0,
+    "error_rate": 0.02,
+    "passed": true
+  }
+}

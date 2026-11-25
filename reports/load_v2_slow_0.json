@@ -1,0 +1,27 @@
+{
+  "target": "http://127.0.0.1:54474",
+  "concurrency": 20,
+  "total_requests": 300,
+  "duration_s": 2.94,
+  "rps": 102.11,
+  "error_rate": 0.0033,
+  "status_codes": {
+    "200": 299,
+    "503": 1
+  },
+  "latency_ms": {
+    "min": 123.1,
+    "avg": 187.9,
+    "p50": 186.7,
+    "p90": 218.7,
+    "p95": 228.7,
+    "p99": 235.4,
+    "max": 241.3
+  },
+  "total_cost_usd": 0.01017,
+  "slo": {
+    "p95_ms": 500.0,
+    "error_rate": 0.02,
+    "passed": true
+  }
+}

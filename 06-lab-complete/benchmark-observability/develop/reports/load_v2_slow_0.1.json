@@ -1,0 +1,27 @@
+{
+  "target": "http://127.0.0.1:51762",
+  "concurrency": 20,
+  "total_requests": 300,
+  "duration_s": 6.5,
+  "rps": 46.16,
+  "error_rate": 0.0033,
+  "status_codes": {
+    "200": 299,
+    "503": 1
+  },
+  "latency_ms": {
+    "min": 122.1,
+    "avg": 368.8,
+    "p50": 195.7,
+    "p90": 1671.2,
+    "p95": 1702.0,
+    "p99": 1725.2,
+    "max": 1743.9
+  },
+  "total_cost_usd": 0.010073,
+  "slo": {
+    "p95_ms": 500.0,
+    "error_rate": 0.02,
+    "passed": false
+  }
+}
