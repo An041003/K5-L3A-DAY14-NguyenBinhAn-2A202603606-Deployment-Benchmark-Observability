@@ -1,6 +1,6 @@
 # Day 14 Lab — Mission Answers
 
-> Đã thực nghiệm trên máy local (Windows 11 + Docker Desktop 29.4.3 / Compose v5.1.3, Python 3.12.10, và môi trường Linux POSIX + Docker cho official grader CP5). Mục Part 3 public URL đang chờ triển khai cloud ở CP6.
+> Đã thực nghiệm đầy đủ trên máy local (Windows 11 + Docker Desktop 29.4.3 / Compose v5.1.3, Python 3.12.10, môi trường Linux POSIX + Docker cho official grader CP5) và triển khai hoàn chỉnh Production Agent Part 6 trên Render (`https://k5-l3a-day14-nguyenbinhan-2a202603606.onrender.com`) kèm Render Key Value (Redis/Valkey).
 
 ## Part 1 — Localhost vs Production
 
@@ -113,14 +113,20 @@ X-XSS-Protection: 1; mode=block
 
 ## Part 3 — Cloud Deployment
 
-### 3.1 Triển khai agent Part 6 trên nền tảng chính (Railway)
-- **URL public:** PENDING — xem [DEPLOYMENT.md](DEPLOYMENT.md) (cần đăng nhập tài khoản Railway để deploy `06-lab-complete/` kèm Redis service và xác minh 4 lệnh CP6).
-- **Screenshots:** `screenshots/dashboard.png`, `screenshots/running.png`, `screenshots/test.png` (PENDING sau bước deploy).
+### 3.1 Triển khai agent Part 6 trên nền tảng chính (Render)
+- **Nền tảng:** Render (Web Service — Instance **Free**, Region **Singapore**, Runtime **Docker**, Root Directory **`06-lab-complete`**), kết nối **Render Key Value (Redis/Valkey)** qua biến môi trường `REDIS_URL` và cấu hình `AGENT_API_KEY` trực tiếp trên Render Dashboard (không ghi secret vào repo).
+- **URL public:** https://k5-l3a-day14-nguyenbinhan-2a202603606.onrender.com (trạng thái `Deploy succeeded | Live`, commit `1b2fb5b`, chi tiết tại [DEPLOYMENT.md](DEPLOYMENT.md)).
+- **Kết quả kiểm thử Public API (CP6 — đủ 4 mã HTTP):**
+  - `GET /health` → **`200`** (`{"status":"ok"}`)
+  - `GET /ready` → **`200`** (`{"status":"ready"}` — xác nhận kết nối Redis/Valkey hoạt động)
+  - `POST /ask` (không có key) → **`401`** (`{"detail":"Missing or invalid API key"}`)
+  - `POST /ask` (có `X-API-Key`) → **`200`** (kiểm thử thực tế với `AGENT_API_KEY` nhập ẩn trên terminal)
+- **Screenshots:** [screenshots/dashboard.png](screenshots/dashboard.png) (`Deploy succeeded | Live` + runtime JSON logs), [screenshots/running.png](screenshots/running.png) (Web Service `Docker / Free` + `✓ Live` + Public URL), [screenshots/test.png](screenshots/test.png) (4 kết quả `200 / 200 / 401 / 200`, không lộ API key).
 
-### 3.2 So sánh `railway.toml` vs `render.yaml`
-- **`railway.toml`** (TOML, gọn nhẹ): chỉ khai báo phần build (`builder = "DOCKERFILE"`) và chính sách deploy (`healthcheckPath = "/health"`, `healthcheckTimeout = 60`, `restartPolicyType = "ON_FAILURE"`, `restartPolicyMaxRetries = 3`). Biến môi trường và dịch vụ Redis được cấu hình trên dashboard Railway (tham chiếu private `REDIS_URL` giữa các service trong cùng project).
-- **`render.yaml`** (YAML Blueprint — Infrastructure as Code): khai báo đầy đủ danh sách services (`type: web`, `runtime: docker`, `rootDir: 06-lab-complete`, `dockerfilePath: ./Dockerfile`, `healthCheckPath: /health`) kèm danh sách `envVars` ngay trong repo. Điểm quan trọng là **không ghi thẳng giá trị secret**: dùng `generateValue: true` cho `AGENT_API_KEY` (Render tự sinh key ngẫu nhiên) và `sync: false` cho `REDIS_URL` (người vận hành nhập giá trị trên dashboard).
-- **Điểm chung:** Cả hai đều inject biến `PORT` động vào container, kiểm tra liveness qua `/health`, và tách hoàn toàn secret khỏi mã nguồn.
+### 3.2 So sánh `railway.toml` vs `render.yaml` (nền tảng còn lại)
+- **`railway.toml`** (TOML, gọn nhẹ): chỉ khai báo phần build (`builder = "DOCKERFILE"`) và chính sách deploy (`healthcheckPath = "/health"`, `healthcheckTimeout = 60`, `restartPolicyType = "ON_FAILURE"`, `restartPolicyMaxRetries = 3`). Biến môi trường và dịch vụ Redis được cấu hình trên dashboard Railway (tham chiếu private `REDIS_URL` giữa các service trong cùng project); khi deploy thư mục con cần đặt Root Directory `/06-lab-complete` trên UI.
+- **`render.yaml`** (YAML Blueprint — Infrastructure as Code): khai báo đầy đủ đặc tả dịch vụ ngay trong repo (`type: web`, `runtime: docker`, `rootDir: 06-lab-complete`, `dockerfilePath: ./Dockerfile`, `healthCheckPath: /health`) kèm danh sách `envVars`. Secret không ghi thẳng giá trị: dùng `generateValue: true` cho `AGENT_API_KEY` (Render tự sinh key ngẫu nhiên) và `sync: false` cho `REDIS_URL` (người vận hành gắn URL từ Render Key Value trên dashboard).
+- **Lý do khác nhau & lựa chọn:** Railway tối ưu thao tác nhanh qua UI/CLI và tự động linking giữa các service, trong khi Render mạnh về Blueprint IaC khai báo `rootDir`, `dockerfilePath`, `envVars` rõ ràng trong Git và có gói Free (Singapore) dễ triển khai trực tiếp từ GitHub (đánh đổi bằng cold start và Redis Free không có persistence). Cả hai đều inject biến `PORT` động vào container, kiểm tra liveness qua `/health`, và tách hoàn toàn secret khỏi mã nguồn.
 
 ### 3.3 Cloud Run — phân tích pipeline CI/CD (`03-cloud-deployment/production-cloud-run/`)
 1. `cloudbuild.yaml` chạy bước kiểm thử (`pip install -r requirements.txt && pytest`) trước để chặn pipeline ngay nếu test thất bại.
@@ -256,6 +262,7 @@ Chi tiết số liệu benchmark & observability xem tại [BENCHMARK_REPORT.md]
 
 | Lần sử dụng | Hỏi gì | AI trả về gì | Tôi tự sửa và tự kiểm tra thế nào |
 |---|---|---|---|
-| 1 | Phân tích và hoàn thiện khung Lab 14 từ repo | Gợi ý code Part 6, bản nháp Mission Answers, script benchmark/eval và unit test fixture | PENDING: học viên tự đọc lại, hiểu rõ từng module trong `06-lab-complete/app/` và xác nhận trước khi nộp |
-| 2 | Đối chiếu tài liệu cập nhật K5 (`83e677f`) | Danh sách thay đổi CP0–CP8, rubric, tên file nộp và cấu trúc báo cáo | PENDING: học viên tự đối chiếu lại với `RULES.md`, `CHECKPOINTS.md`, `RUBRIC.md`, `SUBMISSION.md` |
-| 3 | Đồng bộ gói bài làm vào workspace lab và thực thi kiểm thử/benchmark thực tế (CP1–CP5, CP7, CP8) | Đồng bộ đúng cấu trúc lab, chạy grader `PASS 12/12` (Linux POSIX + Docker), chạy thực nghiệm CP1–CP4 và benchmark/eval CP7 (23/23), cập nhật kết quả thực tế | PENDING: học viên tự kiểm tra lại toàn bộ số liệu, trực tiếp deploy CP6, xem lại các câu trả lời để giải thích được trước Lab Coach trước khi commit/push |
+| 1 | Phân tích yêu cầu và hoàn thiện khung Lab 14 từ repo đề bài | Gợi ý source code Part 6 (`06-lab-complete/app/*`), cấu hình Docker/Render/Railway, script hỗ trợ benchmark/eval và bản nháp tài liệu | Đã tích hợp vào repo fork và chạy kiểm chứng qua unit test (`8/8` contract, `5/5` tools) và official grader `PASS 12/12`; nội dung giải thích chi tiết từng module để học viên tự ôn và trình bày trực tiếp khi Lab Coach hỏi |
+| 2 | Đối chiếu tài liệu cập nhật lớp K5 (`83e677f`) | Danh sách quy tắc nộp bài, rubric chi tiết, tên file JSON/CSV/screenshot theo `CHECKPOINTS.md` và `SUBMISSION.md` | Đã đối chiếu trực tiếp với `RULES.md`, `RUBRIC.md`, `SUBMISSION.md` để chuẩn hóa toàn bộ cấu trúc thư mục nộp |
+| 3 | Đồng bộ bài làm vào workspace lab và chạy kiểm thử, benchmark, observability (CP1–CP5, CP7, CP8) | Đồng bộ theo cấu trúc lab, chạy grader `PASS 12/12` (Linux POSIX + Docker), chạy CP1–CP4, chạy CP7 benchmark & eval (`23/23`, `0` regression), sửa lỗi `PYTHONUSERBASE` cho Dockerfile CP8, chạy CP8 chaos/scaling/traces và chụp 4 ảnh Part 7 | Đã lưu toàn bộ bằng chứng đo thật (10 JSON, 2 CSV, `production_ready.txt`, 4 ảnh PNG) vào repo; học viên cần tự xem lại toàn bộ số liệu và nhận xét trước khi nộp |
+| 4 | Hoàn thiện CP6 (Render cloud deployment) và Final Audit toàn bộ Lab 14 | AI hỗ trợ kiểm thử 3 endpoint không cần key (`/health` 200, `/ready` 200, `/ask` 401), xác minh trực quan 3 ảnh CP6 không lộ secret, cập nhật `DEPLOYMENT.md`, `MISSION_ANSWERS.md` và chạy Final Audit | **Học viên tự thực hiện trực tiếp:** tạo Render Key Value (Redis), cấu hình biến môi trường trên Render Dashboard, deploy Production Agent Part 6 (`06-lab-complete`), tự chạy đủ 4 lệnh HTTP test (`200 / 200 / 401 / 200`) với `AGENT_API_KEY` nhập ẩn và chụp 3 ảnh `dashboard.png`, `running.png`, `test.png` |
