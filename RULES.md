@@ -30,5 +30,5 @@
 - **Không bao giờ** commit `.env`, `AGENT_API_KEY` thật, token Railway/Render. Chỉ commit `.env.example` (đã có trong `.gitignore`).
 - Lỡ commit secret: đổi key mới ngay trên dashboard rồi báo Lab Coach. Xoá file thôi chưa đủ, vì secret vẫn nằm trong lịch sử git.
 - Dùng gói miễn phí của Railway hoặc Render. Không bắt buộc nhập thẻ thanh toán; nếu nền tảng đòi thẻ, báo Lab Coach để đổi nền tảng.
-- Xong lab thì tắt stack Docker (`docker compose down -v`). Sau khi đã được chấm có thể xoá service trên cloud.
+- Xong lab thì tắt stack Docker (`docker compose down -v`, thêm đúng `-p` nếu lúc bật có dùng `-p`). Sau khi đã được chấm có thể xoá service trên cloud.
 - Không ghi email, số điện thoại vào bài. Họ tên và MSSV chỉ ghi ở tên repo và ô Họ tên của `BENCHMARK_REPORT.md`.

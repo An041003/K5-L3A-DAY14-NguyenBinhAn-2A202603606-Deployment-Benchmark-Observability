@@ -30,7 +30,7 @@ K5-L3A-DAY14-HoVaTen-MSSV-Deployment-Benchmark-Observability/
 ├── BENCHMARK_REPORT.md         # Part 7, copy từ BENCHMARK_REPORT_TEMPLATE.md rồi điền
 ├── reports/                    # Part 7 — JSON của load test và eval
 │   ├── load_v2_c1.json … load_v2_c100.json
-│   ├── load_v2_slow_0.json, load_v2_slow_0.1.json   # so sánh MOCK_SLOW_RATE
+│   ├── load_v2_slow_0.json, load_v2_slow_0.03.json, load_v2_slow_0.1.json   # so sánh MOCK_SLOW_RATE
 │   ├── eval_v1.json
 │   ├── eval_v2.json
 │   └── eval_v2_fixed.json

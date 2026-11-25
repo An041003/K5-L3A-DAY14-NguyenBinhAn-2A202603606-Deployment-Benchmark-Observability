@@ -61,7 +61,7 @@ Kẹt quá 10 phút ở một mốc: gọi Lab Coach, ghi lại lỗi, rồi đi
 - **Cần làm:** Part 5, Exercise 5.1–5.5 trong `05-scaling-reliability/`.
 - **Sản phẩm:** mục Part 5 trong `MISSION_ANSWERS.md`.
 - **Cần hiểu:** liveness (`/health`) khác readiness (`/ready`) ở đâu; vì sao state trong RAM hỏng khi chạy nhiều instance.
-- **Tự kiểm tra:** sau `docker compose up --scale agent=3` (Exercise 5.4), chạy `production/test_stateless.py` và giải thích kết quả.
+- **Tự kiểm tra:** trong `05-scaling-reliability/production/`, chạy `docker compose -p k5-day14-scaling up -d --build --scale agent=3` (Exercise 5.4), rồi `python test_stateless.py` và giải thích kết quả. Xong thì `docker compose -p k5-day14-scaling down` (xem mục *Lưu ý khi làm bài* số 7 trong [README.md](README.md)).
 
 ## CP5 — Final Project (1:50 → 2:50)
 
@@ -74,7 +74,7 @@ Kẹt quá 10 phút ở một mốc: gọi Lab Coach, ghi lại lỗi, rồi đi
 ## CP6 — Cloud Deployment (2:50 → 3:15)
 
 - **Mục tiêu:** agent Part 6 chạy trên cloud với URL public, có Redis và API key.
-- **Cần làm:** Part 3, Exercise 3.1 (Railway) **hoặc** 3.2 (Render), nhưng deploy thư mục `06-lab-complete/` (dùng `railway.toml` hoặc `render.yaml` bạn viết ở CP5), không deploy app mẫu `03-cloud-deployment/`. Cách làm và phần Redis: mục *Lưu ý khi làm bài* số 2 trong [README.md](README.md). Đặt `AGENT_API_KEY` bằng biến môi trường trên nền tảng, không ghi vào code.
+- **Cần làm:** Part 3, Exercise 3.1 (Railway) **hoặc** 3.2 (Render), nhưng deploy thư mục `06-lab-complete/` (dùng `railway.toml` hoặc `render.yaml` bạn viết ở CP5), không deploy app mẫu `03-cloud-deployment/`. Cách làm và phần Redis: mục *Lưu ý khi làm bài* số 8 trong [README.md](README.md). Đặt `AGENT_API_KEY` bằng biến môi trường trên nền tảng, không ghi vào code.
 - **Sản phẩm:** `DEPLOYMENT.md` theo mẫu trong [DAY14_DELIVERY_CHECKLIST.md](DAY14_DELIVERY_CHECKLIST.md) mục 3; ảnh trong `screenshots/`; URL điền vào mục Part 3 của `MISSION_ANSWERS.md`.
 - **Tự kiểm tra:** đặt `BASE` là URL public của agent và `AGENT_API_KEY` là key đã đặt trên nền tảng, rồi chạy 4 lệnh dưới đây. Mỗi lệnh chỉ in mã HTTP, chụp ảnh được mà không lộ key.
 
@@ -90,15 +90,16 @@ Kẹt quá 10 phút ở một mốc: gọi Lab Coach, ghi lại lỗi, rồi đi
 - **Mục tiêu:** đo được agent nhanh tới đâu và đúng tới đâu bằng số của chính mình.
 - **Cần làm:** Part 7 Bước 1 trong `06-lab-complete/benchmark-observability/develop/` (Exercise 7.1–7.3): chạy agent v1 (cổng 8001) và v2 (cổng 8002) như Exercise 7.1, rồi:
   1. Tạo báo cáo **một lần**, từ gốc repo: `cp -n 06-lab-complete/benchmark-observability/BENCHMARK_REPORT_TEMPLATE.md BENCHMARK_REPORT.md` (`-n` để không ghi đè nếu file đã có).
-  2. Load test 4 mức concurrency, mỗi mức một file:
+  2. Load test 4 mức concurrency, mỗi mức một file. Các lệnh từ đây chạy trong thư mục `develop/`:
 
      ```bash
+     cd 06-lab-complete/benchmark-observability/develop
      for c in 1 10 50 100; do
        python load_test.py --url http://localhost:8002 --requests 300 --concurrency "$c" --out "reports/load_v2_c${c}.json"
      done
      ```
 
-     Lệnh trả exit code 1 khi vi phạm SLO nhưng vẫn lưu file. So sánh `MOCK_SLOW_RATE`: bật lại v2 với `MOCK_SLOW_RATE=0`, rồi `MOCK_SLOW_RATE=0.1`, mỗi lần chạy cùng `--requests 300 --concurrency 20` và lưu `--out reports/load_v2_slow_0.json`, `--out reports/load_v2_slow_0.1.json`.
+     Lệnh trả exit code 1 khi vi phạm SLO nhưng vẫn lưu file. So sánh `MOCK_SLOW_RATE`: bật lại v2 lần lượt với `MOCK_SLOW_RATE=0`, `0.03` (mặc định) và `0.1`, mỗi lần chạy cùng `--requests 300 --concurrency 20` và lưu `--out reports/load_v2_slow_0.json`, `--out reports/load_v2_slow_0.03.json`, `--out reports/load_v2_slow_0.1.json` (ba hàng của bảng 2.2 trong mẫu báo cáo).
   3. Eval v1 và v2 bằng hai lệnh ở Exercise 7.3 (lưu `reports/eval_v1.json`, `reports/eval_v2.json`).
   4. Sửa `KNOWLEDGE_BASE`, tắt rồi bật lại v2, chạy eval cuối:
 
@@ -106,7 +107,7 @@ Kẹt quá 10 phút ở một mốc: gọi Lab Coach, ghi lại lỗi, rồi đi
      python eval/run_eval.py --url http://localhost:8002 --min-accuracy 1.0 --baseline reports/eval_v2.json --out reports/eval_v2_fixed.json
      ```
   5. Job CI của Exercise 7.3: nộp file job hoặc giải thích cách dùng exit code của `run_eval.py` để chặn merge.
-- **Sản phẩm:** trong `develop/reports/`: `load_v2_c1.json`, `load_v2_c10.json`, `load_v2_c50.json`, `load_v2_c100.json`, hai file `load_v2_slow_*.json`, `eval_v1.json`, `eval_v2.json`, `eval_v2_fixed.json`; `BENCHMARK_REPORT.md` ở gốc repo đã bắt đầu điền.
+- **Sản phẩm:** trong `develop/reports/`: `load_v2_c1.json`, `load_v2_c10.json`, `load_v2_c50.json`, `load_v2_c100.json`, ba file `load_v2_slow_*.json`, `eval_v1.json`, `eval_v2.json`, `eval_v2_fixed.json`; `BENCHMARK_REPORT.md` ở gốc repo đã bắt đầu điền.
 - **Cần hiểu:** vì sao đặt SLO theo p95/p99 chứ không theo trung bình; vì sao "cost / câu đúng" tốt hơn "cost / câu" để so hai phiên bản.
 - **Tự kiểm tra:** lệnh eval cuối ở bước 4 in `Quality gate ... ✅ PASS` và file `reports/eval_v2_fixed.json` có tồn tại.
 
@@ -114,17 +115,17 @@ Kẹt quá 10 phút ở một mốc: gọi Lab Coach, ghi lại lỗi, rồi đi
 
 - **Mục tiêu:** nhìn được sức khoẻ agent khi chạy (metrics, trace, alert) và nộp đủ bằng chứng.
 - **Cần làm:** Part 7 Bước 2 trong `06-lab-complete/benchmark-observability/production/` (Exercise 7.4–7.7): bật stack bằng Docker Compose, tạo tải bằng Locust, chụp Grafana, tìm 1 trace chậm và 1 trace lỗi trong Jaeger (chép kèm dòng log JSON có cùng `trace_id`), làm cho ít nhất 2 alert firing và ghi thời gian tới lúc firing.
-  Benchmark scale phải chạy Locust **headless** để có file CSV (Locust giao diện web không tự ghi CSV), theo mục 2.7 trong `06-lab-complete/benchmark-observability/README.md`:
+  Benchmark scale phải chạy Locust **headless** để có file CSV (Locust giao diện web không tự ghi CSV), theo mục 2.7 trong `06-lab-complete/benchmark-observability/README.md`. Bật stack ngay từ đầu bằng lệnh có `-p k5-day14-observability` dưới đây, thay cho `docker compose up` trong Exercise 7.4, rồi làm các bài 7.4–7.7 trên stack đó (lý do: mục *Lưu ý khi làm bài* số 7 trong [README.md](README.md)):
 
   ```bash
-  docker compose up -d --scale agent=1
-  docker compose run --rm locust -f /mnt/locust/locustfile.py --host http://nginx \
+  docker compose -p k5-day14-observability up -d --build --scale agent=1
+  docker compose -p k5-day14-observability run --rm locust -f /mnt/locust/locustfile.py --host http://nginx \
     --headless -u 100 -r 10 -t 2m --csv /mnt/results/scale_1
-  docker compose up -d --scale agent=3
-  docker compose run --rm locust -f /mnt/locust/locustfile.py --host http://nginx \
+  docker compose -p k5-day14-observability up -d --scale agent=3
+  docker compose -p k5-day14-observability run --rm locust -f /mnt/locust/locustfile.py --host http://nginx \
     --headless -u 100 -r 10 -t 2m --csv /mnt/results/scale_3
   ```
 
-  Chụp đủ ảnh và chép log **trước** khi dọn stack (`docker compose down -v`).
+  Chụp đủ ảnh và chép log **trước** khi dọn stack (`docker compose -p k5-day14-observability down -v`). Dùng cùng `-p` khi xem log (`docker compose -p k5-day14-observability logs agent`).
 - **Sản phẩm:** `BENCHMARK_REPORT.md` điền đủ; `production/benchmark-results/scale_1_stats.csv` và `scale_3_stats.csv`; 4 ảnh Part 7 trong `screenshots/`. Đóng gói theo [SUBMISSION.md](SUBMISSION.md).
 - **Tự kiểm tra:** mọi con số trong `BENCHMARK_REPORT.md` khớp với file JSON/CSV đã nộp.
