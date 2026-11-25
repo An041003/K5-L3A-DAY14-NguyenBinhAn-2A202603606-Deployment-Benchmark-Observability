@@ -18,7 +18,7 @@
 | Part 7 — Eval & quality gate | 5 | CP7 | v1 vs v2; v2 đạt 23/23 không regression; cách dùng exit code để chặn merge |
 | Part 7 — Observability stack | 4 | CP8 | Ảnh Grafana có tải; trả lời Exercise 7.4 |
 | Part 7 — Tracing | 3 | CP8 | Ảnh trace chậm (span chậm nhất + số ms); `trace_id` khớp một dòng log JSON |
-| Part 7 — Alerts & chaos | 4 | CP8 | Ảnh ≥ 2 alert firing + thời gian tới lúc firing; phân tích thí nghiệm |
+| Part 7 — Alerts & chaos | 4 | CP8 | Một ảnh `prometheus-alert-firing.png` (trang Alerts) thấy ≥ 2 alert đang firing; thời gian tới lúc firing; phân tích thí nghiệm |
 | **Tổng thô** | **120** | | |
 
 Tiêu chí con và đáp án mong đợi của Part 1, 2, 4, 5, 7 nằm trong [INSTRUCTOR_GUIDE.md](INSTRUCTOR_GUIDE.md). Part 3 và Part 6 chấm theo hai bảng dưới đây.

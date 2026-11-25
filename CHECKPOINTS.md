@@ -114,7 +114,7 @@ Kẹt quá 10 phút ở một mốc: gọi Lab Coach, ghi lại lỗi, rồi đi
 ## CP8 — Observability stack và nộp bài (sau giờ lab, trước deadline)
 
 - **Mục tiêu:** nhìn được sức khoẻ agent khi chạy (metrics, trace, alert) và nộp đủ bằng chứng.
-- **Cần làm:** Part 7 Bước 2 trong `06-lab-complete/benchmark-observability/production/` (Exercise 7.4–7.7): bật stack bằng Docker Compose, tạo tải bằng Locust, chụp Grafana, tìm 1 trace chậm và 1 trace lỗi trong Jaeger (chép kèm dòng log JSON có cùng `trace_id`), làm cho ít nhất 2 alert firing và ghi thời gian tới lúc firing.
+- **Cần làm:** Part 7 Bước 2 trong `06-lab-complete/benchmark-observability/production/` (Exercise 7.4–7.7): bật stack bằng Docker Compose, tạo tải bằng Locust, chụp Grafana, tìm 1 trace chậm và 1 trace lỗi trong Jaeger (chép kèm dòng log JSON có cùng `trace_id`), làm cho ít nhất 2 alert firing và ghi thời gian tới lúc firing. Chụp một ảnh trang Alerts của Prometheus thấy cả 2 alert cùng firing, lưu là `prometheus-alert-firing.png`.
   Benchmark scale phải chạy Locust **headless** để có file CSV (Locust giao diện web không tự ghi CSV), theo mục 2.7 trong `06-lab-complete/benchmark-observability/README.md`. Bật stack ngay từ đầu bằng lệnh có `-p k5-day14-observability` dưới đây, thay cho `docker compose up` trong Exercise 7.4, rồi làm các bài 7.4–7.7 trên stack đó (lý do: mục *Lưu ý khi làm bài* số 7 trong [README.md](README.md)):
 
   ```bash
