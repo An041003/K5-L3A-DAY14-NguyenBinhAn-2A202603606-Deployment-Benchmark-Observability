@@ -75,7 +75,7 @@ Kẹt quá 10 phút ở một mốc: gọi Lab Coach, ghi lại lỗi, rồi đi
 
 - **Mục tiêu:** agent Part 6 chạy trên cloud với URL public, có Redis và API key.
 - **Cần làm:** Part 3, Exercise 3.1 (Railway) **hoặc** 3.2 (Render), nhưng deploy thư mục `06-lab-complete/` (dùng `railway.toml` hoặc `render.yaml` bạn viết ở CP5), không deploy app mẫu `03-cloud-deployment/`. Cách làm và phần Redis: mục *Lưu ý khi làm bài* số 8 trong [README.md](README.md). Đặt `AGENT_API_KEY` bằng biến môi trường trên nền tảng, không ghi vào code.
-- **Sản phẩm:** `DEPLOYMENT.md` theo mẫu trong [DAY14_DELIVERY_CHECKLIST.md](DAY14_DELIVERY_CHECKLIST.md) mục 3; ảnh trong `screenshots/`; URL điền vào mục Part 3 của `MISSION_ANSWERS.md`.
+- **Sản phẩm:** `DEPLOYMENT.md` theo mẫu trong [DAY14_DELIVERY_CHECKLIST.md](DAY14_DELIVERY_CHECKLIST.md) mục 3; ảnh trong `screenshots/`; URL điền vào mục Part 3 của `MISSION_ANSWERS.md`, kèm phần so sánh `railway.toml` với `render.yaml` và vài dòng về pipeline Cloud Run (Exercise 3.3) để lấy đủ điểm Part 3 (xem [RUBRIC.md](RUBRIC.md#part-3--cloud-deployment-8-điểm)).
 - **Tự kiểm tra:** đặt `BASE` là URL public của agent và `AGENT_API_KEY` là key đã đặt trên nền tảng, rồi chạy 4 lệnh dưới đây. Mỗi lệnh chỉ in mã HTTP, chụp ảnh được mà không lộ key.
 
   ```bash
